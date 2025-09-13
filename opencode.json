@@ -1,0 +1,42 @@
+// opencode.json (この内容をコピーしてください)
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "lmstudio": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "LM Studio (local)",
+      "options": {
+        "baseURL": "http://127.0.0.1:1234/v1"
+      },
+      "models": {
+        "openai/gpt-oss-20b": {
+          "name": "gpt-oss 20B (local)"
+        }
+      }
+    }
+  },
+
+  "model": "openai/gpt-oss-20b",
+
+  "agent": {
+    "build": {
+      "description": "Default coding mode with only OpenCode tools.",
+      "tools": {
+        "read": true,
+        "write": true,
+        "edit": true,
+        "bash": true,
+        "grep": true,
+        "glob": true,
+        "list": true,
+        "webfetch": true,
+        "patch": true,
+        "todoread": true,
+        "todowrite": true
+      },
+      "prompt": "{file:./AGENTS.md}"
+    }
+  },
+
+  "instructions": ["AGENTS.md"]
+}
