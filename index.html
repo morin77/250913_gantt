@@ -1,21 +1,66 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<title>シンプルガントチャート</title>
-<style>
-body{font-family:Arial, sans-serif; margin:20px;}
-#chart{border-collapse:collapse; width:100%;}
-#chart th, #chart td{border:1px solid #ccc; padding:5px; text-align:center;}
-.bar{background:#4caf50; color:white;}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ガントチャートアプリ</title>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <style>
+    body{font-family:Arial,sans-serif;margin:20px;background:#f9f9f9;}
+    h1{text-align:center;color:#333;}
+    form{max-width:600px;margin:auto;background:white;padding:15px;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,.1);}
+    label{display:block;margin-top:10px;font-weight:bold;}
+    input[type=text],input[type=date]{width:100%;padding:8px;margin-top:4px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;}
+    button{margin-top:15px;padding:10px 20px;background:#007bff;color:white;border:none;border-radius:4px;cursor:pointer;}
+    button:hover{background:#0056b3;}
+    canvas{display:block;margin:auto;background:white;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,.1);margin-top:20px;}
+  </style>
 </head>
 <body>
-<h1>シンプルガントチャート</h1>
-<table id="chart">
-<thead><tr><th>タスク</th><th>開始日</th><th>終了日</th></tr></thead>
-<tbody id="rows"></tbody>
-</table>
-<script src="script.js"></script>
+<h1>ガントチャートアプリ</h1>
+<form id="taskForm">
+  <label for="projectName">プロジェクト名</label>
+  <input type="text" id="projectName" required>
+
+  <label for="taskName">タスク名</label>
+  <input type="text" id="taskName" required>
+
+  <label for="startDate">開始日</label>
+  <input type="date" id="startDate" required>
+
+  <label for="endDate">終了日</label>
+  <input type="date" id="endDate" required>
+
+  <button type="submit">追加</button>
+</form>
+<canvas id="ganttChart"></canvas>
+<script>
+const ctx = document.getElementById('ganttChart').getContext('2d');
+let tasks = [];
+let chart;
+function updateChart(){
+  const labels = tasks.map(t=>t.taskName);
+  const data = tasks.map(t=>{
+    const start = new Date(t.startDate).getTime();
+    const end   = new Date(t.endDate).getTime();
+    return (end-start)/86400000; // days
+  });
+  if(chart){chart.destroy();}
+  chart = new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'期間(日)',data,backgroundColor:'#4caf50'}]},options:{indexAxis:'y',scales:{x:{beginAtZero:true}},plugins:{legend:{display:false}}}});
+}
+
+document.getElementById('taskForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const projectName=document.getElementById('projectName').value;
+  const taskName=document.getElementById('taskName').value;
+  const startDate=document.getElementById('startDate').value;
+  const endDate=document.getElementById('endDate').value;
+  if(new Date(startDate)>new Date(endDate)){alert('開始日は終了日より前にしてください');return;}
+  tasks.push({projectName,taskName,startDate,endDate});
+  updateChart();
+  e.target.reset();
+});
+</script>
 </body>
 </html>
